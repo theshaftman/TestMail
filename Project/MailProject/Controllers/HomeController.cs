@@ -1,4 +1,5 @@
-﻿using MailProject.Models;
+﻿using MailProject.Models.Data;
+using MailProject.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +10,11 @@ namespace MailProject.Controllers
 {
     public class HomeController : Controller
     {
-        private Mail mail;
+        private IMailModel mail;
 
         public HomeController()
         {
-            this.mail = new Mail();
+            this.mail = new MailModel();
         }
 
         // GET: Home
@@ -33,7 +34,17 @@ namespace MailProject.Controllers
         }
 
         [AllowAnonymous]
-        [HttpPost]
+        [HttpGet]
+        public ActionResult GetEmail(int id)
+        {
+            return Json(new
+            {
+                data = this.mail.GetMail(id)
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        [AllowAnonymous]
+        [HttpPost, ValidateInput(false)]
         public ActionResult SendMail(string to, string subject, string body)
         {
             return Json(new

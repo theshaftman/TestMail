@@ -113,7 +113,8 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Constant.cs" />
-    <Compile Include="Models\Mail.cs" />
+    <Compile Include="Models\Interfaces\IMailModel.cs" />
+    <Compile Include="Models\Data\MailModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
