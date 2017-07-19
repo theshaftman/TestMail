@@ -114,6 +114,7 @@ namespace MailProject.Models.Data
         {
             var message = new MailMessage(Constant.USERNAME, to);
             message.Subject = subject;
+            message.IsBodyHtml = true;
             message.Body = body;
             SmtpClient mailer = new SmtpClient("smtp.gmail.com", 587);
             mailer.Credentials = new NetworkCredential(Constant.USERNAME, Constant.PASSWORD);

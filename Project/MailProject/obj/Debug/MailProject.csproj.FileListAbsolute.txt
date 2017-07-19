@@ -137,3 +137,4 @@ C:\Users\SAGER\Source\Repos\TestMail\Project\MailProject\bin\System.Web.Helpers.
 C:\Users\SAGER\Source\Repos\TestMail\Project\MailProject\bin\System.Web.Mvc.xml
 C:\Users\SAGER\Source\Repos\TestMail\Project\MailProject\obj\Debug\MailProject.dll
 C:\Users\SAGER\Source\Repos\TestMail\Project\MailProject\obj\Debug\MailProject.pdb
+C:\Users\SAGER\Source\Repos\TestMail\Project\MailProject\obj\Debug\MailProject.csprojResolveAssemblyReference.cache

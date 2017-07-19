@@ -1,0 +1,131 @@
+﻿
+@{
+    ViewBag.Title = "Mail";
+}
+
+@section scripts {
+    <style type="text/css">
+        #mails, #mailBody {
+            padding: 20px;
+            border: 1px solid black;
+        }
+
+        .mailInfo {
+            display: block;
+            border: 1px solid black;
+        }
+
+        .re {
+            margin-left: 50px;
+            border: 1px solid red;
+        }
+
+        .selected-row {
+            background-color: #ededed;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var entityMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+            '/': '&#x2F;',
+            '`': '&#x60;',
+            '=': '&#x3D;'
+        };
+
+        function escapeHtml(string) {
+            return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+                return entityMap[s];
+            });
+        }
+
+        var interval = setInterval(loadTemplate, 20000);
+
+        function loadTemplate() {
+            $.ajax({
+                type: "GET",
+                url: window.location.origin + "/Home/GetEmails"
+            }).done(function (res) {
+                var html = "";
+                for (var i = 0; i < res["data"].length; i++) {
+                    var from = res["data"][i]["From"]["Name"] + " &lt;" + res["data"][i]["From"]["Address"] + "&gt;";
+                    var subject = res["data"][i]["Subject"];
+                    subject = subject.replace("(Trial Version)", "");
+                    var body = res["data"][i]["TextBody"];
+                    var htmlBody = res["data"][i]["HtmlBody"];
+
+                    html += "<div class=\"mailInfo" + (subject.toUpperCase().indexOf("RE:") > -1 || subject.toUpperCase().indexOf("FW:") > -1 ? " re" : "") + "\">" + "From: <span class=\"from\">" + from + "</span></br>" + "Subject: <span class=\"subject\">" + subject + "</span><br/>" + "<span class=\"hidden\">" + htmlBody + "</span>" + "</div>";
+                }
+                $("#mails").html("");
+                $("#mails").html(html);
+
+                $(".mailInfo").unbind();
+                $(".mailInfo").on("click", function (e) {
+                    var str = $(this).html().substring($(this).html().indexOf('<span class="hidden">') + '<span class="hidden">'.length);
+                    str = str.substring(0, str.length - "</span>".length);
+                    str = str.replace(/class="hidden"/, "");
+                    var currentTo = $(this).html().substring($(this).html().indexOf('<span class="from">') + '<span class="from">'.length);
+                    currentTo = currentTo.substring(0, currentTo.indexOf("</span>"));
+                    currentTo = currentTo.substring(currentTo.indexOf("&lt;") + "&lt;".length);
+                    currentTo = currentTo.replace(/&gt;/, "");
+                    var currentSubject = $(this).html().substring($(this).html().indexOf('<span class="subject">') + '<span class="subject">'.length);
+                    currentSubject = currentSubject.substring(0, currentSubject.indexOf("</span>"));
+
+                    $("#mailBody").html("");
+                    $("#mailBody").html(str);
+                    $(".mailInfo.selected-row").removeClass("selected-row");
+                    $(this).addClass("selected-row");
+
+                    $("#to").val(currentTo);
+                    $("#subject").val("Re: " + currentSubject.replace(/Re: /, "").replace(/Fw: /, ""));
+                    $("#body").val("\n\n" + str);
+                });
+
+                $("#send").unbind();
+                $("#send").on("click", function (e) {
+                    if ($("#to").val().length > 0 && $("#subject").val().length > 0) {
+                        $.ajax({
+                            type: "POST",
+                            url: window.location.origin + "/Home/SendMail",
+                            data: {
+                                to: $("#to").val(),
+                                subject: $("#subject").val(),
+                                body: $("#body").val()
+                            }
+                        }).done(function (res) {
+                            $("#to").val("");
+                            $("#subject").val("");
+                            $("#body").val("");
+                        });
+                    }
+                });
+            });
+        }
+    </script>
+}
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-6">
+        <div id="mails"></div>
+    </div>
+    <div class="col-md-6">
+        <div id="mailBody"></div>
+    </div>
+</div>
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-12">
+        <div class="form-group">
+            <label>To: </label>
+            <input class="form-control input-sm" id="to" type="text" />
+        </div>
+        <label>Subject: </label>
+        <input class="form-group form-control input-sm" id="subject" />
+        <label>Body: </label>
+        <textarea class="form-control" rows="5" id="body"></textarea>
+        <button id="send" class="btn btn-blue">Send</button>
+    </div>
+</div>
