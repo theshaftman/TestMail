@@ -1,0 +1,76 @@
+﻿
+@{
+    ViewBag.Title = "Mail";
+}
+
+@section scripts {
+    <style type="text/css">
+        #mails, #mailBody {
+            padding: 20px;
+            border: 1px solid black;
+        }
+
+        .mailInfo {
+            display: block;
+            border: 1px solid black;
+        }
+
+        .re {
+            margin-left: 50px;
+            border: 1px solid red;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var entityMap = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+            '/': '&#x2F;',
+            '`': '&#x60;',
+            '=': '&#x3D;'
+        };
+
+        function escapeHtml(string) {
+            return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+                return entityMap[s];
+            });
+        }
+
+        $.ajax({
+            type: "GET",
+            url: "http://localhost:56679/Home/GetEmails"
+        }).done(function (res) {
+            var html = "";
+            for (var i = 0; i < res["data"].length; i++) {
+                var from = res["data"][i]["From"]["Name"] + " &lt;" + res["data"][i]["From"]["Address"] + "&gt;";
+                var subject = res["data"][i]["Subject"];
+                var body = res["data"][i]["TextBody"];
+                var htmlBody = res["data"][i]["HtmlBody"];
+
+                html += "<div class=\"mailInfo" + (subject.toUpperCase().indexOf("RE:") > -1 ? " re" : "") + "\">" + "From: " + from + "</br>" + "Subject: " + subject + "<br/>" + "Body: " + body + "<span class=\"hidden\">" + htmlBody + "</span>" + "</div>";
+            }
+            $("#mails").html("");
+            $("#mails").html(html);
+
+            $(".mailInfo").unbind();
+            $(".mailInfo").on("click", function (e) {
+                var str = $(this).html().substring($(".mailInfo")[0].innerHTML.indexOf('<span class="hidden">') + '<span class="hidden">'.length);
+                str = str.substring(0, str.length - "</span>".length);
+                $("#mailBody").html("");
+                $("#mailBody").html(str);
+            });
+        });
+    </script>
+}
+
+<div class="row" style="margin-top: 20px;">
+    <div class="col-md-6">
+        <div id="mails"></div>
+    </div>
+    <div class="col-md-6">
+        <div id="mailBody"></div>
+    </div>
+</div>
