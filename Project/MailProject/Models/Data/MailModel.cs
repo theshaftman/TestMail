@@ -127,7 +127,7 @@ namespace MailProject.Models.Data
         {
             var listSubjects = list
                 .OrderBy(m => m.ReceivedDate)
-                .Select(m => m.Subject.ToUpper().Replace("RE: ", "").Replace("FW: ", ""))
+                .Select(m => m.Subject.ToUpper().Replace("RE: ", "").Replace("FWD: ", ""))
                 .Distinct()
                 .ToList();
             var orderedList = new List<Mail>();
@@ -135,7 +135,7 @@ namespace MailProject.Models.Data
             {
                 orderedList.AddRange(list
                     .OrderBy(m => m.ReceivedDate)
-                    .Where(m => m.Subject.ToUpper().Replace("RE: ", "").Replace("FW: ", "")
+                    .Where(m => m.Subject.ToUpper().Replace("RE: ", "").Replace("FWD: ", "")
                     .Equals(item)));
             }
             return orderedList;

@@ -58,7 +58,7 @@
                     var body = res["data"][i]["TextBody"];
                     var htmlBody = res["data"][i]["HtmlBody"];
 
-                    html += "<div class=\"mailInfo" + (subject.toUpperCase().indexOf("RE:") > -1 || subject.toUpperCase().indexOf("FW:") > -1 ? " re" : "") + "\">" + "From: <span class=\"from\">" + from + "</span></br>" + "Subject: <span class=\"subject\">" + subject + "</span><br/>" + "<span class=\"hidden\">" + htmlBody + "</span>" + "</div>";
+                    html += "<div class=\"mailInfo" + (subject.toUpperCase().indexOf("RE:") > -1 || subject.toUpperCase().indexOf("FWD:") > -1 ? " re" : "") + "\">" + "From: <span class=\"from\">" + from + "</span></br>" + "Subject: <span class=\"subject\">" + subject + "</span><br/>" + "<span class=\"hidden\">" + htmlBody + "</span>" + "</div>";
                 }
                 $("#mails").html("");
                 $("#mails").html(html);
@@ -81,7 +81,7 @@
                     $(this).addClass("selected-row");
 
                     $("#to").val(currentTo);
-                    $("#subject").val("Re: " + currentSubject.replace(/Re: /, "").replace(/Fw: /, ""));
+                    $("#subject").val("Re: " + currentSubject.replace(/Re: /, "").replace(/Fwd: /, ""));
                     $("#body").val("\n\n" + str);
                 });
 
