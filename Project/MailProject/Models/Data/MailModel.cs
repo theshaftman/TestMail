@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Web;
 using MailProject.Models.Interfaces;
+using MailProject.Models.DataViews;
 
 namespace MailProject.Models.Data
 {
@@ -40,7 +41,7 @@ namespace MailProject.Models.Data
             }
         }
 
-        IEnumerable<EAGetMail.Mail> IMailModel.GetMails()
+        IEnumerable<DataModel> IMailModel.GetMails()
         {
             // Gmail IMAP4 server is "imap.gmail.com"
             MailServer oServer = new MailServer("imap.gmail.com",
@@ -55,16 +56,36 @@ namespace MailProject.Models.Data
 
             try
             {
-                IList<EAGetMail.Mail> list = new List<EAGetMail.Mail>();
+                IList<DataModel> list = new List<DataModel>();
                 oClient.Connect(oServer);
                 MailInfo[] infos = oClient.GetMailInfos();
+                Imap4Folder[] folders = oClient.Imap4Folders;
 
                 for (int i = 0; i < infos.Length; i++)
                 {
                     MailInfo info = infos[i];
                     // Download email from GMail IMAP4 server
                     EAGetMail.Mail oMail = oClient.GetMail(info);
-                    list.Add(oMail);
+                    var attachments = new DataAttachment[oMail.Attachments.Length];
+                    for (int j = 0; j < attachments.Length; j++)
+                    {
+                        attachments[j].ContentID = oMail.Attachments[j].ContentID;
+                        attachments[j].Name = oMail.Attachments[j].Name;
+                    }
+                    var oMailData = new DataModel()
+                    {
+                        From = oMail.From,
+                        To = oMail.To,
+                        Cc = oMail.Cc,
+                        Bcc = oMail.Bcc,
+                        Subject = oMail.Subject,
+                        TextBody = oMail.TextBody,
+                        HtmlBody = oMail.HtmlBody,
+                        SentDate = oMail.SentDate,
+                        ReceivedDate = oMail.ReceivedDate,
+                        Attachments = attachments
+                    };
+                    list.Add(oMailData);
                 }
 
                 // Quit and purge emails marked as deleted from Gmail IMAP4 server.
@@ -123,14 +144,14 @@ namespace MailProject.Models.Data
             return true;
         }
 
-        private IList<Mail> OrderList(IList<Mail> list)
+        private IList<DataModel> OrderList(IList<DataModel> list)
         {
             var listSubjects = list
-                .OrderBy(m => m.ReceivedDate)
+                .OrderByDescending(m => m.ReceivedDate)
                 .Select(m => m.Subject.ToUpper().Replace("RE: ", "").Replace("FWD: ", ""))
                 .Distinct()
                 .ToList();
-            var orderedList = new List<Mail>();
+            var orderedList = new List<DataModel>();
             foreach (var item in listSubjects)
             {
                 orderedList.AddRange(list
