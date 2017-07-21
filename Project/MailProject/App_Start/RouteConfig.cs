@@ -24,7 +24,7 @@ namespace MailProject
                 "Default", // Route name
                 "{controller}/{action}/{id}", // URL with parameters
                 new { controller = "Home", action = "Index", id = UrlParameter.Optional },
-                new string[] { "BaseAdminMVC.Areas.TitomsAdmin.Controllers" }
+                new string[] { "MailProject.Controllers" }
             );
         }
     }
