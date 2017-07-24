@@ -33,6 +33,10 @@
         .selected-row {
             background-color: #ededed;
         }
+
+        .invisible-way {
+            display: none;
+        }
     </style>
 
     <script type="text/javascript">
@@ -65,6 +69,9 @@
                 var previousMyMail = "";
                 for (var i = 0; i < res["data"].length; i++) {
                     var from = res["data"][i]["From"]["Name"] + " &lt;" + res["data"][i]["From"]["Address"] + "&gt;";
+                    var to = res["data"][i]["To"].map(function (obj) { return obj["Address"]; }).join(", ");
+                    var cc = res["data"][i]["Cc"].map(function (obj) { return obj["Address"]; }).join(", ");
+                    var bcc = res["data"][i]["Bcc"].map(function (obj) { return obj["Address"]; }).join(", ");
                     var subject = res["data"][i]["Subject"];
                     subject = subject.replace("(Trial Version)", "");
                     var body = res["data"][i]["TextBody"];
@@ -75,7 +82,17 @@
                         previousMyMail = checkStr;
                         html += "<div class=\"mailInfo fromMe\">From: <span class=\"from\">Ingram Micro &lt;ingrammicro.bg@gmail.com&gt;</span></br>Subject: <span class=\"subject\"></span><span class=\"hidden\">" + (htmlBody.substring(ind + searchString.length)) + "</span></div>";
                     }
-                    html += "<div class=\"mailInfo" + (subject.toUpperCase().indexOf("RE:") > -1 || subject.toUpperCase().indexOf("FWD:") > -1 ? " re" : "") + "\">" + "From: <span class=\"from\">" + from + "</span></br>" + "Subject: <span class=\"subject\">" + subject + "</span><br/>" + "<span class=\"hidden\">" + htmlBody + "</span>" + "</div>";
+                    html += "<div class=\"mailInfo" + (subject.toUpperCase().indexOf("RE:") > -1 || subject.toUpperCase().indexOf("FWD:") > -1 ? " re" : "") + "\">" +
+                        "From: <span class=\"from\">" + from + "</span></br>" +
+                        "Subject: <span class=\"subject\">" + subject + "</span>" +
+                        "<span class=\"invisible-way\">" +
+                            "<strong>To:</strong> " + to + "<br/>" +
+                            "<strong>Cc:</strong> " + cc + "<br/>" +
+                            "<strong>Bcc:</strong> " + bcc + "<hr />" +
+                        + "</span>" +
+                        "<span class=\"hidden\">" +
+                            htmlBody + "</span>" +
+                        "</div>";
                 }
                 $("#mails").html("");
                 $("#mails").html(html);
@@ -92,6 +109,12 @@
                     var currentSubject = $(this).html().substring($(this).html().indexOf('<span class="subject">') + '<span class="subject">'.length);
                     currentSubject = currentSubject.substring(0, currentSubject.indexOf("</span>"));
 
+                    // An issue with the NaN is available
+                    var mailInformation = $(this).html().substring($(this).html().indexOf('<span class="invisible-way">') + '<span class="invisible-way">'.length);
+                    mailInformation = mailInformation.substring(0, mailInformation.indexOf("<span class=\"hidden\">") - 3);
+
+                    $("#mailInformation").html("");
+                    $("#mailInformation").html(mailInformation);
                     $("#mailBody").html("");
                     $("#mailBody").html(str);
                     $(".mailInfo.selected-row").removeClass("selected-row");
@@ -135,6 +158,7 @@
     <div class="col-md-6">
         <fieldset class="scheduler-border">
             <legend class="scheduler-border">Ticket Content</legend>
+            <div id="mailInformation"></div>
             <div id="mailBody"></div>
         </fieldset>
     </div>
