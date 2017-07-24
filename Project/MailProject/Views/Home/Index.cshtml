@@ -5,9 +5,14 @@
 
 @section scripts {
     <style type="text/css">
-        #mails, #mailBody {
+        #mails, #mailBody, #sendEmailBody {
             padding: 20px;
             border: 1px solid black;
+        }
+
+        #mails {
+            max-height: 400px;
+            overflow-y: scroll;
         }
 
         .mailInfo {
@@ -122,22 +127,33 @@
 
 <div class="row" style="margin-top: 20px;">
     <div class="col-md-6">
-        <div id="mails"></div>
+        <fieldset class="scheduler-border">
+            <legend class="scheduler-border">Ticket Overview</legend>
+            <div id="mails"></div>
+        </fieldset>
     </div>
     <div class="col-md-6">
-        <div id="mailBody"></div>
+        <fieldset class="scheduler-border">
+            <legend class="scheduler-border">Ticket Content</legend>
+            <div id="mailBody"></div>
+        </fieldset>
     </div>
 </div>
 <div class="row" style="margin-top: 20px;">
     <div class="col-md-12">
-        <div class="form-group">
-            <label>To: </label>
-            <input class="form-control input-sm" id="to" type="text" />
-        </div>
-        <label>Subject: </label>
-        <input class="form-group form-control input-sm" id="subject" />
-        <label>Body: </label>
-        <textarea class="form-control" rows="5" id="body"></textarea>
-        <button id="send" class="btn btn-blue">Send</button>
+        <fieldset class="scheduler-border">
+            <legend class="scheduler-border">Compose Email</legend>
+            <div id="sendEmailBody">
+                <div class="form-group">
+                    <label>To: </label>
+                    <input class="form-control input-sm" id="to" type="text" />
+                </div>
+                <label>Subject: </label>
+                <input class="form-group form-control input-sm" id="subject" />
+                <label>Body: </label>
+                <textarea class="form-control" rows="5" id="body"></textarea>
+                <button id="send" class="btn btn-blue">Send</button>
+            </div>
+        </fieldset>
     </div>
 </div>
