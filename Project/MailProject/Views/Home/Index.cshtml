@@ -20,12 +20,18 @@
             border: 1px solid red;
         }
 
+        .fromMe {
+            margin-left: 50px;
+            border: 1px solid blue;
+        }
+
         .selected-row {
             background-color: #ededed;
         }
     </style>
 
     <script type="text/javascript">
+        var searchString = '<a href="mailto:ingrammicro.bg@gmail.com" target="_blank">ingrammicro.bg@gmail.com</a>&gt;</span> wrote:<br><blockquote class="gmail_quote" style="margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">';
         var entityMap = {
             '&': '&amp;',
             '<': '&lt;',
@@ -51,13 +57,19 @@
                 url: window.location.origin + "/Home/GetEmails"
             }).done(function (res) {
                 var html = "";
+                var previousMyMail = "";
                 for (var i = 0; i < res["data"].length; i++) {
                     var from = res["data"][i]["From"]["Name"] + " &lt;" + res["data"][i]["From"]["Address"] + "&gt;";
                     var subject = res["data"][i]["Subject"];
                     subject = subject.replace("(Trial Version)", "");
                     var body = res["data"][i]["TextBody"];
                     var htmlBody = res["data"][i]["HtmlBody"];
-
+                    var ind = htmlBody.indexOf(searchString);
+                    var checkStr = htmlBody.substring(ind + searchString.length, htmlBody.indexOf("<", htmlBody.length - htmlBody.substring(ind + searchString.length + 1).length));
+                    if (ind > -1 && checkStr != previousMyMail) {
+                        previousMyMail = checkStr;
+                        html += "<div class=\"mailInfo fromMe\">From: <span class=\"from\">Ingram Micro &lt;ingrammicro.bg@gmail.com&gt;</span></br>Subject: <span class=\"subject\"></span><span class=\"hidden\">" + (htmlBody.substring(ind + searchString.length)) + "</span></div>";
+                    }
                     html += "<div class=\"mailInfo" + (subject.toUpperCase().indexOf("RE:") > -1 || subject.toUpperCase().indexOf("FWD:") > -1 ? " re" : "") + "\">" + "From: <span class=\"from\">" + from + "</span></br>" + "Subject: <span class=\"subject\">" + subject + "</span><br/>" + "<span class=\"hidden\">" + htmlBody + "</span>" + "</div>";
                 }
                 $("#mails").html("");

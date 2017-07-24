@@ -67,10 +67,17 @@ namespace MailProject.Models.Data
                     // Download email from GMail IMAP4 server
                     EAGetMail.Mail oMail = oClient.GetMail(info);
                     var attachments = new DataAttachment[oMail.Attachments.Length];
-                    for (int j = 0; j < attachments.Length; j++)
+                    try
                     {
-                        attachments[j].ContentID = oMail.Attachments[j].ContentID;
-                        attachments[j].Name = oMail.Attachments[j].Name;
+                        for (int j = 0; j < attachments.Length; j++)
+                        {
+                            attachments[j].ContentID = oMail.Attachments[j].ContentID;
+                            attachments[j].Name = oMail.Attachments[j].Name;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        var mess = ex.Message;
                     }
                     var oMailData = new DataModel()
                     {
